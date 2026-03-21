@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { services } from "@/lib/content";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -14,11 +15,20 @@ import {
 } from "@/components/ui/Icons";
 
 const iconMap = {
-  website: GlobeIcon,
-  software: CodeIcon,
-  support: SupportIcon,
-  hardware: ChipIcon,
+  website:      GlobeIcon,
+  software:     CodeIcon,
+  support:      SupportIcon,
+  hardware:     ChipIcon,
   consultation: StrategyIcon,
+};
+
+// Unique nebula gradient per service — each card is a mini galaxy cluster
+const nebulaMap = {
+  website:      "radial-gradient(ellipse at 30% 20%, rgba(100,80,255,0.22) 0%, rgba(60,60,200,0.08) 45%, transparent 72%)",
+  software:     "radial-gradient(ellipse at 70% 15%, rgba(20,200,200,0.20) 0%, rgba(20,160,180,0.08) 45%, transparent 72%)",
+  support:      "radial-gradient(ellipse at 40% 25%, rgba(255,80,160,0.18) 0%, rgba(220,60,140,0.07) 45%, transparent 72%)",
+  hardware:     "radial-gradient(ellipse at 60% 20%, rgba(255,180,40,0.18) 0%, rgba(220,150,20,0.07) 45%, transparent 72%)",
+  consultation: "radial-gradient(ellipse at 35% 20%, rgba(40,140,255,0.22) 0%, rgba(20,100,240,0.08) 45%, transparent 72%)",
 };
 
 export default function Services() {
@@ -43,105 +53,147 @@ export default function Services() {
         <div className="mt-8 grid gap-4 lg:grid-cols-6">
           {services.map((service, index) => {
             const Icon = iconMap[service.icon];
-            const isActive = activeIndex === index;
+            const isActive   = activeIndex === index;
+            const isNeighbour = !isActive && Math.abs(activeIndex - index) === 1;
+            const nebula = nebulaMap[service.icon];
 
             return (
-              <TiltCard
+              <Reveal
                 key={service.title}
+                delay={index * 0.07}
                 className={`h-full ${isActive ? "lg:col-span-2" : "lg:col-span-1"}`}
               >
-                <article
-                  onMouseEnter={() => setActiveIndex(index)}
-                  onFocus={() => setActiveIndex(index)}
-                  onClick={() => setActiveIndex(index)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      setActiveIndex(index);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  className={`group glow-frame relative flex h-full min-h-[300px] cursor-pointer flex-col overflow-hidden rounded-[30px] border p-6 transition-[border-color,background-color,box-shadow,transform] duration-300 ease-out ${
-                    isActive
-                      ? "border-blue-300/20 bg-[#09111f]/[0.9] shadow-[0_22px_60px_rgba(45,86,210,0.18)]"
-                      : "border-white/[0.08] bg-[#09111f]/[0.78] hover:border-white/15"
-                  }`}
-                >
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${service.accent} transition-opacity duration-300 ${
-                      isActive ? "opacity-100" : "opacity-60"
-                    }`}
-                    aria-hidden="true"
-                  />
-                  <div
-                    className={`absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_42%)] transition duration-300 ${
-                      isActive ? "opacity-100" : "opacity-0"
-                    }`}
-                    aria-hidden="true"
-                  />
-                  <div
-                    className={`pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/70 to-transparent transition-opacity duration-300 ${
-                      isActive ? "opacity-100" : "opacity-0"
-                    }`}
-                    aria-hidden="true"
-                  />
+                <TiltCard className="h-full">
+                  {/* Active card animated glow ring */}
+                  {isActive && (
+                    <motion.div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 rounded-[30px]"
+                      animate={{
+                        boxShadow: [
+                          "0 0 0px 0px rgba(80,120,255,0)",
+                          "0 0 28px 4px rgba(80,120,255,0.35)",
+                          "0 0 0px 0px rgba(80,120,255,0)",
+                        ],
+                      }}
+                      transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+                    />
+                  )}
 
-                  <div className="relative z-10 flex h-full flex-col">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-blue-100 shadow-[0_0_30px_rgba(80,126,255,0.18)] transition duration-500 group-hover:border-blue-300/30 group-hover:bg-blue-400/10 group-hover:shadow-[0_0_50px_rgba(80,126,255,0.26)]">
-                        <Icon className="h-6 w-6" />
-                      </div>
-                      <div className="text-right">
-                        <div className="text-[11px] uppercase tracking-[0.26em] text-slate-500">
-                          0{index + 1}
+                  <motion.article
+                    animate={{
+                      opacity:  isNeighbour ? 0.62 : 1,
+                      scale:    isNeighbour ? 0.985 : 1,
+                      y:        isActive ? -4 : 0,
+                      rotate:   isActive ? 0 : 0,
+                    }}
+                    whileHover={{ rotate: isActive ? 0 : 0.5 }}
+                    transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                    onMouseEnter={() => setActiveIndex(index)}
+                    onFocus={() => setActiveIndex(index)}
+                    onClick={() => setActiveIndex(index)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setActiveIndex(index);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    className={`group glow-frame relative flex h-full min-h-[300px] cursor-pointer flex-col overflow-hidden rounded-[30px] border p-6 transition-[border-color,background-color] duration-300 ease-out ${
+                      isActive
+                        ? "border-blue-300/20 bg-[#09111f]/[0.9] shadow-[0_22px_60px_rgba(45,86,210,0.18)]"
+                        : "border-white/[0.08] bg-[#09111f]/[0.78] hover:border-white/15"
+                    }`}
+                  >
+                    {/* Existing gradient accent */}
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${service.accent} transition-opacity duration-300 ${
+                        isActive ? "opacity-100" : "opacity-60"
+                      }`}
+                      aria-hidden="true"
+                    />
+
+                    {/* Nebula galaxy overlay — unique per service */}
+                    <div
+                      aria-hidden="true"
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        background: nebula,
+                        opacity: isActive ? 1 : 0.6,
+                        transition: "opacity 0.35s ease",
+                        animation: isActive ? "nebulaShimmer 3s ease-in-out infinite" : "none",
+                      }}
+                    />
+
+                    <div
+                      className={`absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_42%)] transition duration-300 ${
+                        isActive ? "opacity-100" : "opacity-0"
+                      }`}
+                      aria-hidden="true"
+                    />
+                    <div
+                      className={`pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/70 to-transparent transition-opacity duration-300 ${
+                        isActive ? "opacity-100" : "opacity-0"
+                      }`}
+                      aria-hidden="true"
+                    />
+
+                    <div className="relative z-10 flex h-full flex-col">
+                      <div className="flex items-start justify-between gap-4">
+                        {/* Icon with gravity — attracted to cursor */}
+                        <div
+                          data-gravity
+                          className="inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-blue-100 shadow-[0_0_30px_rgba(80,126,255,0.18)] transition duration-500 group-hover:border-blue-300/30 group-hover:bg-blue-400/10 group-hover:shadow-[0_0_50px_rgba(80,126,255,0.26)]"
+                        >
+                          <Icon className="h-6 w-6" />
                         </div>
-                        <div className="mt-2 text-xs uppercase tracking-[0.26em] text-blue-100/75">
-                          {service.stat}
+                        <div className="text-right">
+                          <div className="text-[11px] uppercase tracking-[0.26em] text-slate-500">
+                            0{index + 1}
+                          </div>
+                          <div className="mt-2 text-xs uppercase tracking-[0.26em] text-blue-100/75">
+                            {service.stat}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="mt-8 flex-1">
-                      <h3 className="text-2xl font-semibold text-white">
-                        {service.title}
-                      </h3>
-
-                      <div
-                        className={`transition-[opacity,transform] duration-300 ${
-                          isActive ? "opacity-100 translate-y-0" : "opacity-80 translate-y-0"
-                        }`}
-                      >
+                      <div className="mt-8 flex-1">
+                        <h3 className="text-2xl font-semibold text-white">
+                          {service.title}
+                        </h3>
                         <p className="mt-4 text-sm leading-7 text-slate-300">
                           {service.description}
                         </p>
                       </div>
-                    </div>
 
-                    <div
-                      className={`overflow-hidden transition-[max-height,opacity,margin] duration-300 ease-out ${
-                        isActive ? "mt-5 max-h-48 opacity-100" : "max-h-0 opacity-0"
-                      }`}
-                    >
-                      <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
-                        <p className="text-sm leading-7 text-slate-200/95">
-                          {service.extra}
-                        </p>
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          {service.bullets.map((bullet) => (
-                            <span
-                              key={bullet}
-                              className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-200"
-                            >
-                              {bullet}
-                            </span>
-                          ))}
+                      {/* Expanded content */}
+                      <div
+                        className={`overflow-hidden transition-[max-height,opacity,margin] duration-300 ease-out ${
+                          isActive ? "mt-5 max-h-48 opacity-100" : "max-h-0 opacity-0"
+                        }`}
+                      >
+                        <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                          <p className="text-sm leading-7 text-slate-200/95">
+                            {service.extra}
+                          </p>
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {service.bullets.map((bullet) => (
+                              <span
+                                key={bullet}
+                                className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-200"
+                              >
+                                {bullet}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </article>
-              </TiltCard>
+                  </motion.article>
+                </TiltCard>
+              </Reveal>
             );
           })}
         </div>

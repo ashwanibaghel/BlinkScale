@@ -1,5 +1,9 @@
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
+import LightSystem from "@/components/ui/LightSystem";
+import CursorGlow from "@/components/ui/CursorGlow";
+import StarField from "@/components/ui/StarField";
+import GravityField from "@/components/ui/GravityField";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -72,7 +76,16 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        {/* Starfield — fixed, z-0, behind everything */}
+        <StarField />
+        {/* Gravity cursor attraction for [data-gravity] elements */}
+        <GravityField radius={150} maxPull={5} />
+        <LightSystem>
+          {children}
+          <CursorGlow />
+        </LightSystem>
+      </body>
     </html>
   );
 }

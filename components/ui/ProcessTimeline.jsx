@@ -1,6 +1,16 @@
+"use client";
+
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+
+// Animated connector line + stager-revealed step cards
 export default function ProcessTimeline({ steps }) {
+  const containerRef = useRef(null);
+  const lineInView = useInView(containerRef, { once: true, margin: "-80px" });
+
   return (
     <div className="mt-16 grid gap-6 xl:grid-cols-[0.4fr_0.6fr]">
+      {/* ── Left sticky panel ── */}
       <div className="glass-panel glow-frame relative overflow-hidden rounded-[34px] px-6 py-8 sm:px-8 sm:py-10 xl:sticky xl:top-24 xl:self-start">
         <div
           className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(84,128,255,0.16),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(124,96,255,0.14),transparent_36%)]"
@@ -13,8 +23,7 @@ export default function ProcessTimeline({ steps }) {
           </h3>
           <p className="mt-5 text-sm leading-8 text-slate-300 sm:text-base">
             Every stage stays visible, collaborative, and paced to keep momentum
-            high without turning the process into noise. Clients always know what
-            is happening, why it matters, and what comes next.
+            high without turning the process into noise.
           </p>
 
           <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
@@ -26,27 +35,36 @@ export default function ProcessTimeline({ steps }) {
                 <div className="text-[11px] uppercase tracking-[0.24em] text-slate-500">
                   Step 0{index + 1}
                 </div>
-                <div className="mt-3 text-base font-medium text-white">
-                  {step.title}
-                </div>
-                <p className="mt-2 text-sm leading-7 text-slate-300">
-                  {step.outcome}
-                </p>
+                <div className="mt-3 text-base font-medium text-white">{step.title}</div>
+                <p className="mt-2 text-sm leading-7 text-slate-300">{step.outcome}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="relative pl-0 sm:pl-8">
-        <div
-          className="absolute bottom-6 left-4 top-6 hidden w-px bg-gradient-to-b from-blue-300/60 via-violet-300/30 to-transparent sm:block"
+      {/* ── Right: animated step cards ── */}
+      <div ref={containerRef} className="relative pl-0 sm:pl-8">
+        {/* Animated connector line — draws in scaleY as section enters view */}
+        <motion.div
           aria-hidden="true"
+          className="absolute bottom-6 left-4 top-6 hidden w-px bg-gradient-to-b from-blue-300/60 via-violet-300/30 to-transparent sm:block"
+          initial={{ scaleY: 0, transformOrigin: "top center" }}
+          animate={lineInView ? { scaleY: 1 } : { scaleY: 0 }}
+          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
         />
+
         <div className="space-y-5">
           {steps.map((step, index) => (
-            <article
+            <motion.article
               key={step.title}
+              initial={{ opacity: 0, x: 24 }}
+              animate={lineInView ? { opacity: 1, x: 0 } : {}}
+              transition={{
+                duration: 0.6,
+                delay: 0.2 + index * 0.12,
+                ease: [0.22, 1, 0.36, 1],
+              }}
               className="glass-panel glow-frame relative overflow-hidden rounded-[30px] px-6 py-6 sm:px-8 sm:py-8"
             >
               <div
@@ -56,6 +74,7 @@ export default function ProcessTimeline({ steps }) {
                 }}
                 aria-hidden="true"
               />
+              {/* Timeline dot */}
               <div
                 className="absolute left-[-0.45rem] top-10 hidden h-4 w-4 rounded-full border border-blue-200/50 bg-[#9ab3ff] shadow-[0_0_24px_rgba(122,146,255,0.6)] sm:block"
                 aria-hidden="true"
@@ -63,14 +82,13 @@ export default function ProcessTimeline({ steps }) {
 
               <div className="relative z-10">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-base font-semibold text-white">
+                  <div data-gravity className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-base font-semibold text-white">
                     0{index + 1}
                   </div>
                   <div className="rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-xs uppercase tracking-[0.24em] text-slate-200">
                     {step.outcome}
                   </div>
                 </div>
-
                 <h3 className="mt-6 text-2xl font-semibold text-white sm:text-[1.9rem]">
                   {step.title}
                 </h3>
@@ -78,7 +96,7 @@ export default function ProcessTimeline({ steps }) {
                   {step.description}
                 </p>
               </div>
-            </article>
+            </motion.article>
           ))}
         </div>
       </div>
