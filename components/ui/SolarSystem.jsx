@@ -226,13 +226,16 @@ export default function SolarSystem() {
       })}
 
       {/* ── 3-Layer Cinematic Sun ─────────────────────────────────── */}
-      <div style={{ position: "absolute", top: "50%", left: "50%", zIndex: 6, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", top: "0%", left: "0%", width: "100%", height: "100%", zIndex: 6, pointerEvents: "none" }}>
         
         {/* Layer 3: Giant Outer Halo (Slightly asymmetrical, slow pulse via CSS) */}
         <div
           aria-hidden="true"
           style={{
             position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
             width: 220,
             height: 220,
             borderRadius: "50%",
@@ -247,12 +250,15 @@ export default function SolarSystem() {
           aria-hidden="true"
           style={{
             position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
             width: 130,
             height: 130,
             borderRadius: "50%",
             background: "radial-gradient(circle, rgba(251,191,36,0.7) 0%, rgba(253,224,71,0.2) 45%, transparent 75%)",
             filter: "blur(18px)",
-            // Dynamic opacity + transform handled inside RAF
+            // Dynamic opacity + transform offset handled inside RAF
           }}
         />
 
@@ -262,6 +268,9 @@ export default function SolarSystem() {
           className="sun-orb"
           style={{
             position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
             width: 58,  // 30% larger than old 44px
             height: 58,
             borderRadius: "50%",

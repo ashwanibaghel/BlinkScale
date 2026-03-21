@@ -139,20 +139,23 @@ export default function Hero() {
             <motion.div
               aria-hidden="true"
               style={{ opacity: solarOpacity, scale: solarScale, y: solarY }}
-              className="relative mx-auto mt-6 hidden sm:block"
+              className="relative mx-auto mt-10 sm:mt-6 flex w-full justify-center h-[380px] sm:h-[600px] lg:h-[960px] overflow-visible"
             >
-              {/* Subtle 3D tilt on mouse move */}
-              <motion.div
-                style={{
-                  width:  SOLAR_SIZE,
-                  height: SOLAR_SIZE,
-                  ...(!reduceMotion
-                    ? { rotateX, rotateY, transformPerspective: 1200, transformStyle: "preserve-3d" }
-                    : {}),
-                }}
-              >
-                <SolarSystem />
-              </motion.div>
+              {/* Responsive Scaler (Shrinks 960px fixed element to fit mobile screens) */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.38] sm:scale-[0.65] lg:scale-100">
+                {/* Subtle 3D tilt on mouse move */}
+                <motion.div
+                  style={{
+                    width:  SOLAR_SIZE,
+                    height: SOLAR_SIZE,
+                    ...(!reduceMotion
+                      ? { rotateX, rotateY, transformPerspective: 1200, transformStyle: "preserve-3d" }
+                      : {}),
+                  }}
+                >
+                  <SolarSystem />
+                </motion.div>
+              </div>
             </motion.div>
 
             {/* ── CTA Buttons ── */}
