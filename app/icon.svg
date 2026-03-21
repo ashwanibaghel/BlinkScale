@@ -1,0 +1,23 @@
+<svg width="128" height="128" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="22" fill="url(#brand-gradient)" />
+  <path
+    d="M20 18H35C43.837 18 51 25.163 51 34C51 42.837 43.837 50 35 50H20V18Z"
+    fill="white"
+    fill-opacity="0.12"
+  />
+  <path
+    d="M24 18H35.5C42.956 18 49 24.0442 49 31.5C49 38.9558 42.956 45 35.5 45H24V18Z"
+    fill="white"
+  />
+  <path
+    d="M24 31H36.5C40.6421 31 44 34.3579 44 38.5C44 42.6421 40.6421 46 36.5 46H24V31Z"
+    fill="#101728"
+  />
+  <defs>
+    <linearGradient id="brand-gradient" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4D8BFF" />
+      <stop offset="0.5" stop-color="#6185FF" />
+      <stop offset="1" stop-color="#8A67FF" />
+    </linearGradient>
+  </defs>
+</svg>

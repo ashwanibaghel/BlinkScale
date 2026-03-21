@@ -1,0 +1,46 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="900" rx="48" fill="#07101F"/>
+  <rect x="40" y="40" width="1120" height="820" rx="36" fill="url(#bg)"/>
+  <circle cx="348" cy="320" r="170" fill="url(#orbA)" fill-opacity="0.9"/>
+  <circle cx="845" cy="590" r="180" fill="url(#orbB)" fill-opacity="0.9"/>
+  <g opacity="0.85">
+    <rect x="222" y="214" width="756" height="472" rx="32" fill="#0D1830" stroke="#FFFFFF" stroke-opacity="0.14"/>
+    <rect x="270" y="266" width="316" height="28" rx="14" fill="#E8EEFF" fill-opacity="0.8"/>
+    <rect x="270" y="318" width="220" height="18" rx="9" fill="#E8EEFF" fill-opacity="0.26"/>
+    <rect x="270" y="366" width="660" height="218" rx="28" fill="url(#panel)"/>
+    <path d="M315 511C372 448 441 431 507 452C573 473 617 545 688 557C751 568 811 522 885 457" stroke="#AFC3FF" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="507" cy="452" r="16" fill="#85A5FF"/>
+    <circle cx="688" cy="557" r="16" fill="#8B6FFF"/>
+    <circle cx="885" cy="457" r="16" fill="#55D6FF"/>
+  </g>
+  <g opacity="0.6">
+    <circle cx="602" cy="450" r="268" stroke="url(#ringA)" stroke-width="2"/>
+    <circle cx="602" cy="450" r="332" stroke="url(#ringB)" stroke-width="2"/>
+  </g>
+  <defs>
+    <linearGradient id="bg" x1="132" y1="116" x2="1022" y2="808" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#081323"/>
+      <stop offset="1" stop-color="#0B1730"/>
+    </linearGradient>
+    <radialGradient id="orbA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(348 320) rotate(90) scale(170)">
+      <stop stop-color="#4D8BFF"/>
+      <stop offset="1" stop-color="#4D8BFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="orbB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(845 590) rotate(90) scale(180)">
+      <stop stop-color="#8A67FF"/>
+      <stop offset="1" stop-color="#8A67FF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="panel" x1="335" y1="388" x2="885" y2="642" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#162546"/>
+      <stop offset="1" stop-color="#111D39"/>
+    </linearGradient>
+    <linearGradient id="ringA" x1="602" y1="182" x2="602" y2="718" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7D5CFF"/>
+      <stop offset="1" stop-color="#53CFFF"/>
+    </linearGradient>
+    <linearGradient id="ringB" x1="602" y1="118" x2="602" y2="782" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4D8BFF"/>
+      <stop offset="1" stop-color="#8B6FFF"/>
+    </linearGradient>
+  </defs>
+</svg>

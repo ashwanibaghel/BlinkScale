@@ -1,0 +1,20 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="900" rx="48" fill="#08111F"/>
+  <rect x="70" y="70" width="1060" height="760" rx="38" fill="#0A1529"/>
+  <rect x="124" y="130" width="952" height="640" rx="34" fill="url(#sheet)"/>
+  <rect x="180" y="194" width="842" height="148" rx="28" fill="#11274A"/>
+  <rect x="180" y="376" width="404" height="318" rx="28" fill="#0E1F3D"/>
+  <rect x="618" y="376" width="404" height="318" rx="28" fill="#102345"/>
+  <rect x="236" y="246" width="326" height="24" rx="12" fill="#EDF2FF" fill-opacity="0.82"/>
+  <rect x="236" y="286" width="218" height="16" rx="8" fill="#EDF2FF" fill-opacity="0.24"/>
+  <path d="M280 572H486" stroke="#EDF2FF" stroke-opacity="0.18" stroke-width="22" stroke-linecap="round"/>
+  <path d="M710 468V618" stroke="#4D8BFF" stroke-width="18" stroke-linecap="round"/>
+  <path d="M774 518V618" stroke="#7A67FF" stroke-width="18" stroke-linecap="round"/>
+  <path d="M838 434V618" stroke="#61C7FF" stroke-width="18" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="sheet" x1="172" y1="148" x2="998" y2="744" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1830"/>
+      <stop offset="1" stop-color="#0D1730"/>
+    </linearGradient>
+  </defs>
+</svg>
