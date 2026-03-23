@@ -50,9 +50,13 @@ function AnimatedStat({ value, suffix = "", label }) {
   }, [inView, reduceMotion, value, suffix, count]);
 
   return (
-    <div ref={ref} className="rounded-[24px] border border-white/10 bg-white/[0.03] p-5">
-      <div className="text-3xl font-semibold text-white">{display}</div>
-      <p className="mt-2 text-sm leading-7 text-slate-300">{label}</p>
+    <div ref={ref} className="glow-frame group relative overflow-hidden rounded-[24px] border border-white/10 bg-[#09111f]/60 p-5 transition-transform duration-500 hover:scale-[1.03]">
+      <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 opacity-20 transition-opacity duration-500 group-hover:opacity-100" />
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      <div className="relative z-10">
+        <div className="font-mono text-4xl font-semibold text-cyan-400 drop-shadow-[0_0_12px_rgba(34,211,238,0.4)]">{display}</div>
+        <p className="mt-3 text-sm leading-7 text-slate-300">{label}</p>
+      </div>
     </div>
   );
 }
@@ -68,41 +72,42 @@ export default function About() {
       <div className="section-shell">
         <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           {/* Left: visual panel — fades in, no ongoing motion */}
+          {/* Left: visual panel — Cosmic Data Core */}
           <Reveal from="left">
-            <div className="glass-panel relative overflow-hidden rounded-[34px] p-4 sm:p-6">
-              <div
-                className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(76,138,255,0.18),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(125,92,255,0.2),transparent_36%)]"
-                aria-hidden="true"
-              />
-              <div className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-slate-950/30 p-3">
+            <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-[40px] border border-white/5 bg-[#030712] p-4 sm:p-8">
+              
+              {/* Deep Space Glow */}
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.15)_0%,transparent_60%)]" />
+              
+              {/* Concentric Orbit Rings */}
+              <div className="absolute h-[130%] w-[130%] animate-[spin_60s_linear_infinite] rounded-full border border-white/[0.03] border-t-white/[0.1] border-b-cyan-500/[0.2]" />
+              <div className="absolute h-[85%] w-[85%] animate-[spin_40s_linear_infinite_reverse] rounded-full border border-blue-500/[0.05] border-r-blue-400/[0.25]" />
+              <div className="absolute h-[50%] w-[50%] animate-[spin_20s_linear_infinite] rounded-full border border-purple-500/[0.1] border-l-purple-400/[0.3] border-dashed" />
+              
+              {/* The Core Image */}
+              <div className="glow-frame float-card-slow relative z-10 w-3/4 overflow-hidden rounded-[36px] bg-[#02040c]/50 p-4 shadow-[0_0_60px_rgba(56,189,248,0.15)] backdrop-blur-md">
                 <Image
                   src="/about-orbit.svg"
                   alt="Abstract BlinkScale systems illustration"
                   width={1200}
                   height={900}
-                  className="h-auto w-full rounded-[22px]"
+                  className="h-auto w-full object-cover mix-blend-screen opacity-90 transition-transform duration-700 hover:scale-105"
                 />
               </div>
 
-              <div className="relative mt-5 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-[24px] border border-white/10 bg-white/[0.04] p-5">
-                  <div className="text-sm uppercase tracking-[0.24em] text-blue-200/80">
-                    Thinking
-                  </div>
-                  <p className="mt-3 text-sm leading-7 text-slate-300">
-                    Product clarity, UX direction, and systems planning aligned
-                    before development starts.
-                  </p>
+              {/* Floating HUD Elements */}
+              <div data-gravity className="absolute left-[5%] top-[15%] z-20 rounded-2xl border border-cyan-400/20 bg-black/40 p-3 shadow-[0_0_20px_rgba(34,211,238,0.1)] backdrop-blur-md transition-colors hover:border-cyan-400/50">
+                <div className="text-[10px] font-mono tracking-widest text-cyan-400">SYS.SYNC</div>
+                <div className="mt-2 flex gap-1.5">
+                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400/40" style={{ animationDelay: '0.2s' }} />
+                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400/20" style={{ animationDelay: '0.4s' }} />
                 </div>
-                <div className="rounded-[24px] border border-white/10 bg-white/[0.04] p-5">
-                  <div className="text-sm uppercase tracking-[0.24em] text-blue-200/80">
-                    Execution
-                  </div>
-                  <p className="mt-3 text-sm leading-7 text-slate-300">
-                    Design and engineering working together so every detail feels
-                    purposeful on launch day.
-                  </p>
-                </div>
+              </div>
+
+              <div data-gravity className="absolute bottom-[15%] right-[5%] z-20 rounded-2xl border border-purple-400/20 bg-black/40 p-4 shadow-[0_0_20px_rgba(168,85,247,0.1)] backdrop-blur-md transition-colors hover:border-purple-400/50">
+                <div className="text-[10px] font-mono tracking-widest text-purple-400">UPTIME</div>
+                <div className="mt-1 font-mono text-sm font-bold text-white tracking-wider">99.99%</div>
               </div>
             </div>
           </Reveal>
@@ -120,8 +125,8 @@ export default function About() {
             <div className="mt-10 space-y-4">
               {bullets.map((item, i) => (
                 <Reveal key={item} delay={0.1 + i * 0.07}>
-                  <div className="glass-panel flex items-center gap-4 rounded-2xl px-5 py-4">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-emerald-300/30 bg-emerald-400/10 text-emerald-200">
+                  <div className="glow-frame glass-panel group flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-300 hover:bg-white/[0.04]">
+                    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-cyan-400/30 bg-cyan-400/10 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-shadow duration-300 group-hover:shadow-[0_0_25px_rgba(34,211,238,0.4)]">
                       <CheckIcon className="h-5 w-5" />
                     </span>
                     <span className="text-base font-medium text-white">{item}</span>

@@ -11,20 +11,26 @@ import { ArrowUpRightIcon } from "@/components/ui/Icons";
 
 export default function Portfolio() {
   const [selectedProject, setSelectedProject] = useState(null);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
-    if (!selectedProject) return undefined;
+    // Check for desktop view to enable rotation
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    handleResize(); // Init
+    window.addEventListener("resize", handleResize);
+    
+    // Trap focus/scroll when modal open
+    if (!selectedProject) return () => window.removeEventListener("resize", handleResize);
 
     const onKeyDown = (event) => {
-      if (event.key === "Escape") {
-        setSelectedProject(null);
-      }
+      if (event.key === "Escape") setSelectedProject(null);
     };
 
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKeyDown);
 
     return () => {
+      window.removeEventListener("resize", handleResize);
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKeyDown);
     };
@@ -48,7 +54,7 @@ export default function Portfolio() {
                 <motion.button
                   type="button"
                   onClick={() => setSelectedProject(project)}
-                  whileHover={{ y: -4 }}
+                  whileHover={{ y: -4, rotate: isDesktop ? 1.5 : 0 }}
                   transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                   className="glass-panel glow-frame group relative block h-full w-full overflow-hidden rounded-[34px] p-4 text-left"
                 >

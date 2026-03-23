@@ -1,80 +1,66 @@
 "use client";
 
 /**
- * STARFIELD — 3-Layer Depth System
- * ─────────────────────────────────
- * Far   layer: tiny (1px), very slow parallax (0.3%), ~40% twinkle
- * Mid   layer: small (1.5px), medium parallax (0.6%), ~60% twinkle
- * Near  layer: larger (2px), faster parallax (1.2%), ~80% twinkle
- *
- * Shooting stars: 5 elements, CSS animation, appear every 6-10s
- * Parallax: smooth lerp on mousemove — very subtle, never distracting
+ * PREMIUM STARFIELD — 3-Layer Depth System + Parallax Nebulas
+ * ─────────────────────────────────────────────────────────────
+ * Far layer   : 75 tiny stars, slowest parallax
+ * Mid layer   : 50 medium stars, steady parallax
+ * Near layer  : 25 larger stars, fastest parallax
+ * 
+ * Nebulas     : 2 soft blobs that subtly shift with mouse
+ * Shooting    : Exactly 1 shooting star at a time, triggers every 8-12s
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-// Pre-generate static star data (runs once at module load — stable across renders)
+// Pre-generate static star data
 function genStars(count, layer) {
-  const sizeRange   = { far: [0.9, 1.4],  mid: [1.3, 2.0],  near: [1.8, 2.8]  };
-  const opacRange   = { far: [0.22, 0.42], mid: [0.42, 0.65], near: [0.58, 0.85] };
-  const twinklePct  = { far: 0.38, mid: 0.58, near: 0.78 };
+  const sizeRange  = { far: [0.8, 1.4], mid: [1.3, 1.8], near: [1.8, 2.5] };
+  const opacRange  = { far: [0.15, 0.35], mid: [0.35, 0.6], near: [0.55, 0.8] };
+  const twinklePct = { far: 0.3, mid: 0.5, near: 0.8 };
+  
   const [sMin, sMax] = sizeRange[layer];
   const [oMin, oMax] = opacRange[layer];
 
-  // Use a simple seed-based PRNG so values are stable across SSR/client
   let seed = layer === "far" ? 1 : layer === "mid" ? 2 : 3;
   const rand = () => { seed = (seed * 1664525 + 1013904223) & 0xffffffff; return (seed >>> 0) / 0xffffffff; };
 
   return Array.from({ length: count }, (_, i) => {
     const twinkle = rand() < twinklePct[layer];
     return {
-      id:           `${layer}-${i}`,
-      top:          rand() * 100,
-      left:         rand() * 100,
-      size:         sMin + rand() * (sMax - sMin),
-      opacity:      oMin + rand() * (oMax - oMin),
+      id: `${layer}-${i}`,
+      top: rand() * 100,
+      left: rand() * 100,
+      size: sMin + rand() * (sMax - sMin),
+      opacity: oMin + rand() * (oMax - oMin),
       twinkle,
-      twinkleDur:   twinkle ? 2 + rand() * 5 : 0,    // 2–7s
-      twinkleDelay: twinkle ? rand() * 8 : 0,         // 0–8s offset
+      twinkleDur: twinkle ? 1.5 + rand() * 2.5 : 0,  // Faster twinkle: 1.5–4.0s
+      twinkleDelay: twinkle ? rand() * 5 : 0,   // tighter offset
     };
   });
 }
 
-const FAR_STARS  = genStars(50, "far");
-const MID_STARS  = genStars(55, "mid");
-const NEAR_STARS = genStars(28, "near");
-
-// 5 shooting stars — CSS-only, different delays for rare appearance
-const SHOOTING = [
-  { top: "8%",  left: "15%", angle: 22,  len: 120, delay: "1.2s",  dur: "6s"  },
-  { top: "18%", left: "60%", angle: 30,  len: 90,  delay: "8.4s",  dur: "8s"  },
-  { top: "5%",  left: "40%", angle: 18,  len: 150, delay: "15s",   dur: "7s"  },
-  { top: "28%", left: "78%", angle: 28,  len: 100, delay: "22.5s", dur: "9s"  },
-  { top: "12%", left: "28%", angle: 25,  len: 80,  delay: "31s",   dur: "6.5s"},
-];
+const FAR_STARS  = genStars(75, "far");
+const MID_STARS  = genStars(50, "mid");
+const NEAR_STARS = genStars(25, "near");
 
 function StarLayer({ stars, layerRef }) {
   return (
-    <div ref={layerRef} className="pointer-events-none absolute inset-[-5%]" aria-hidden="true">
+    <div ref={layerRef} className="pointer-events-none absolute inset-[-5%]" aria-hidden="true" style={{ willChange: "transform" }}>
       {stars.map((s) => (
         <span
           key={s.id}
           style={{
-            position:         "absolute",
-            top:              `${s.top}%`,
-            left:             `${s.left}%`,
-            width:            s.size,
-            height:           s.size,
-            borderRadius:     "50%",
-            background:       "white",
-            opacity:          s.opacity,
-            willChange:       s.twinkle ? "opacity, transform" : "auto",
-            animationName:    s.twinkle ? "starTwinkle" : "none",
-            animationDuration:`${s.twinkleDur}s`,
-            animationDelay:   `${s.twinkleDelay}s`,
-            animationTimingFunction: "ease-in-out",
-            animationIterationCount: "infinite",
-            animationDirection:      "alternate",
+            position: "absolute",
+            top: `${s.top}%`,
+            left: `${s.left}%`,
+            width: s.size,
+            height: s.size,
+            borderRadius: "50%",
+            background: "white",
+            opacity: s.opacity,
+            willChange: s.twinkle ? "opacity, transform" : "auto",
+            animation: s.twinkle ? `starTwinkle ${s.twinkleDur}s ease-in-out ${s.twinkleDelay}s infinite alternate` : "none",
           }}
         />
       ))}
@@ -86,11 +72,17 @@ export default function StarField() {
   const farRef  = useRef(null);
   const midRef  = useRef(null);
   const nearRef = useRef(null);
+  const blob1Ref = useRef(null);
+  const blob2Ref = useRef(null);
+  
   const rafRef  = useRef(null);
   const mouseRef = useRef({ x: 0.5, y: 0.5 });
 
-  useEffect(() => {
+  // Single organic shooting star state
+  const [shootingStar, setShootingStar] = useState(null);
 
+  useEffect(() => {
+    // ── Mouse Tracking & Parallax RAF ──
     const onMouse = (e) => {
       mouseRef.current = {
         x: e.clientX / window.innerWidth,
@@ -99,58 +91,98 @@ export default function StarField() {
     };
     window.addEventListener("mousemove", onMouse, { passive: true });
 
-    // Smooth lerp targets
     let tx = 0.5, ty = 0.5;
-
     const tick = () => {
       tx += (mouseRef.current.x - tx) * 0.04;
       ty += (mouseRef.current.y - ty) * 0.04;
 
-      // Offset from center (normalized -0.5 to +0.5), scaled to px
       const ox = (tx - 0.5) * 80;
       const oy = (ty - 0.5) * 80;
 
-      // 3 layers move at different speeds — creates depth illusion
-      if (farRef.current)  farRef.current.style.transform  = `translate(${ox * 0.3}px, ${oy * 0.3}px)`;
-      if (midRef.current)  midRef.current.style.transform  = `translate(${ox * 0.65}px, ${oy * 0.65}px)`;
-      if (nearRef.current) nearRef.current.style.transform = `translate(${ox * 1.2}px, ${oy * 1.2}px)`;
+      // Stars parallax
+      if (farRef.current)  farRef.current.style.transform  = `translate(${ox * 0.25}px, ${oy * 0.25}px)`;
+      if (midRef.current)  midRef.current.style.transform  = `translate(${ox * 0.55}px, ${oy * 0.55}px)`;
+      if (nearRef.current) nearRef.current.style.transform = `translate(${ox * 1.1}px, ${oy * 1.1}px)`;
+      
+      // Nebulas parallax (opposite direction for volume)
+      if (blob1Ref.current) blob1Ref.current.style.transform = `translate(${-ox * 0.4}px, ${-oy * 0.4}px)`;
+      if (blob2Ref.current) blob2Ref.current.style.transform = `translate(${-ox * 0.7}px, ${-oy * 0.7}px)`;
 
       rafRef.current = requestAnimationFrame(tick);
     };
-
     rafRef.current = requestAnimationFrame(tick);
+
+    // ── Shooting Star Sequencer (Exactly 10s gap, 3 specific paths) ──
+    const presetShootingStars = [
+      { top: 5,  left: 10, angle: 30,  len: 160, travel: 1200, dur: 3.5 }, // TL -> BR
+      { top: 15, left: 85, angle: 150, len: 160, travel: 1200, dur: 4 },   // TR -> BL
+      { top: 80, left: 10, angle: -30, len: 140, travel: 1000, dur: 3.8 }, // BL -> TR
+    ];
+    let currentShootingIndex = 0;
+    
+    let timeoutId;
+    const triggerShootingStar = () => {
+      setShootingStar(null);
+      setTimeout(() => {
+        setShootingStar(presetShootingStars[currentShootingIndex]);
+        currentShootingIndex = (currentShootingIndex + 1) % presetShootingStars.length;
+        timeoutId = setTimeout(triggerShootingStar, 10000); // exactly 10s next
+      }, 50);
+    };
+    
+    // Initial start
+    timeoutId = setTimeout(triggerShootingStar, 3000);
+
     return () => {
       window.removeEventListener("mousemove", onMouse);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      clearTimeout(timeoutId);
     };
   }, []);
 
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#02040c]"
       aria-hidden="true"
       role="presentation"
     >
-      {/* 3 star layers — parallax applied via RAF */}
+      {/* ── Nebula Blobs (2 max) ── */}
+      <div ref={blob1Ref} style={{
+        position: "absolute", top: "10%", left: "15%",
+        width: "40vw", height: "40vw", borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(30,20,80,0.4) 0%, transparent 65%)",
+        filter: "blur(60px)",
+        animation: "auraDrift 16s ease-in-out infinite alternate",
+        willChange: "transform",
+      }} />
+      <div ref={blob2Ref} style={{
+        position: "absolute", bottom: "10%", right: "10%",
+        width: "35vw", height: "35vw", borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(20,50,90,0.3) 0%, transparent 60%)",
+        filter: "blur(50px)",
+        animation: "auraDrift 22s ease-in-out infinite alternate-reverse",
+        willChange: "transform",
+      }} />
+
+      {/* ── 3 Star Layers ── */}
       <StarLayer stars={FAR_STARS}  layerRef={farRef}  />
       <StarLayer stars={MID_STARS}  layerRef={midRef}  />
       <StarLayer stars={NEAR_STARS} layerRef={nearRef} />
 
-      {/* Shooting stars — pure CSS, appear rarely */}
-      {SHOOTING.map((s, i) => (
+      {/* ── Single Shooting Star ── */}
+      {shootingStar && (
         <span
-          key={i}
           className="shooting-star"
           style={{
-            top:              s.top,
-            left:             s.left,
-            "--ss-angle":     `${s.angle}deg`,
-            "--ss-len":       `${s.len}px`,
-            animationDelay:   s.delay,
-            animationDuration: s.dur,
+            top: `${shootingStar.top}%`,
+            left: `${shootingStar.left}%`,
+            "--ss-angle": `${shootingStar.angle}deg`,
+            "--ss-len": `${shootingStar.len}px`,
+            "--ss-dur": `${shootingStar.dur}s`,
+            "--ss-travel": `${shootingStar.travel}px`,
           }}
         />
-      ))}
+      )}
     </div>
   );
 }

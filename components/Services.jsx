@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { services } from "@/lib/content";
 import Reveal from "@/components/ui/Reveal";
@@ -33,6 +33,14 @@ const nebulaMap = {
 
 export default function Services() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    handleResize(); // Init
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <section
@@ -85,9 +93,8 @@ export default function Services() {
                       opacity:  isNeighbour ? 0.62 : 1,
                       scale:    isNeighbour ? 0.985 : 1,
                       y:        isActive ? -4 : 0,
-                      rotate:   isActive ? 0 : 0,
                     }}
-                    whileHover={{ rotate: isActive ? 0 : 0.5 }}
+                    whileHover={{ scale: 1.015, y: -4 }}
                     transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
                     onMouseEnter={() => setActiveIndex(index)}
                     onFocus={() => setActiveIndex(index)}
@@ -171,11 +178,11 @@ export default function Services() {
                       {/* Expanded content */}
                       <div
                         className={`overflow-hidden transition-[max-height,opacity,margin] duration-300 ease-out ${
-                          isActive ? "mt-5 max-h-48 opacity-100" : "max-h-0 opacity-0"
+                          isActive ? "mt-5 max-h-60 opacity-100" : "max-h-0 opacity-0"
                         }`}
                       >
-                        <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
-                          <p className="text-sm leading-7 text-slate-200/95">
+                        <div className="rounded-[24px] border border-white/10 bg-black/20 p-4 overflow-y-auto custom-scrollbar max-h-[14rem] md:max-h-[16rem]">
+                          <p className="text-sm leading-7 text-slate-200/95 pr-2">
                             {service.extra}
                           </p>
                           <div className="mt-4 flex flex-wrap gap-2">

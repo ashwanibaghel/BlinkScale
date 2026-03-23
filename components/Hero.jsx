@@ -98,6 +98,32 @@ export default function Hero() {
             className="pointer-events-none absolute inset-x-[20%] bottom-0 h-40 bg-[radial-gradient(ellipse_at_bottom,rgba(40,100,220,0.12),transparent_60%)]"
             aria-hidden="true"
           />
+          {/* Right-side nebula fill — slow drift blob */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute"
+            style={{
+              top: "15%", right: "-8%",
+              width: 420, height: 420,
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(120,60,255,0.11) 0%, rgba(60,40,160,0.07) 45%, transparent 72%)",
+              filter: "blur(48px)",
+              animation: "auraDrift 18s ease-in-out infinite alternate",
+            }}
+          />
+          {/* Left-side secondary nebula */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute"
+            style={{
+              bottom: "10%", left: "-6%",
+              width: 320, height: 320,
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(30,80,200,0.10) 0%, rgba(20,50,140,0.05) 50%, transparent 74%)",
+              filter: "blur(40px)",
+              animation: "auraDrift 22s ease-in-out infinite alternate-reverse",
+            }}
+          />
 
           {/* CSS particles */}
           {PARTICLES.map((p, i) => (

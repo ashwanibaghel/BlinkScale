@@ -12,8 +12,8 @@
 import { useEffect, useRef } from "react";
 
 export default function GravityField({
-  radius  = 150,   // px — no gravity beyond this
-  maxPull = 5,     // px — max translation
+  radius  = 120,   // px — STRICT radius limit
+  maxPull = 4,     // px — STRICT translation limit
 }) {
   const rafRef  = useRef(null);
   const mouseRef = useRef({ x: -9999, y: -9999 }); // off-screen default = no pull

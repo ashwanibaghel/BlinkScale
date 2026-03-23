@@ -45,14 +45,31 @@ export default function ProcessTimeline({ steps }) {
 
       {/* ── Right: animated step cards ── */}
       <div ref={containerRef} className="relative pl-0 sm:pl-8">
-        {/* Animated connector line — draws in scaleY as section enters view */}
-        <motion.div
+        {/* Animated curved SVG connector line */}
+        <svg
+          className="absolute bottom-6 left-0 top-6 hidden w-8 sm:block pointer-events-none"
+          preserveAspectRatio="none"
+          viewBox="0 0 32 100"
           aria-hidden="true"
-          className="absolute bottom-6 left-4 top-6 hidden w-px bg-gradient-to-b from-blue-300/60 via-violet-300/30 to-transparent sm:block"
-          initial={{ scaleY: 0, transformOrigin: "top center" }}
-          animate={lineInView ? { scaleY: 1 } : { scaleY: 0 }}
-          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-        />
+        >
+          <defs>
+            <linearGradient id="flow-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#93c5fd" stopOpacity="0.6" />
+              <stop offset="60%" stopColor="#c4b5fd" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#c4b5fd" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <motion.path
+            d="M 16,0 C 32,30 0,70 16,100"
+            vectorEffect="non-scaling-stroke"
+            fill="none"
+            stroke="url(#flow-grad)"
+            strokeWidth="1.5"
+            initial={{ pathLength: 0 }}
+            animate={lineInView ? { pathLength: 1 } : { pathLength: 0 }}
+            transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+          />
+        </svg>
 
         <div className="space-y-5">
           {steps.map((step, index) => (
