@@ -38,7 +38,7 @@ export default function Portfolio() {
 
   return (
     <>
-      <section id="portfolio" className="section-anchor py-24 sm:py-28">
+      <section id="portfolio" className="section-anchor content-visibility-auto py-24 sm:py-28">
         <div className="section-shell">
           <Reveal>
             <SectionHeading

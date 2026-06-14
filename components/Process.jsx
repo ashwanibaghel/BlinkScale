@@ -5,7 +5,7 @@ import ProcessTimeline from "@/components/ui/ProcessTimeline";
 
 export default function Process() {
   return (
-    <section id="process" className="section-anchor py-24 sm:py-28">
+    <section id="process" className="section-anchor content-visibility-auto py-24 sm:py-28">
       <div className="section-shell">
         <Reveal>
           <SectionHeading

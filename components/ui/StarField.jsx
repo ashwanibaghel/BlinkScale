@@ -46,7 +46,12 @@ const NEAR_STARS = genStars(25, "near");
 
 function StarLayer({ stars, layerRef }) {
   return (
-    <div ref={layerRef} className="pointer-events-none absolute inset-[-5%]" aria-hidden="true" style={{ willChange: "transform" }}>
+    <div
+      ref={layerRef}
+      className="pointer-events-none absolute inset-x-[-5%] top-[-10%] bottom-[-50%]"
+      aria-hidden="true"
+      style={{ willChange: "transform" }}
+    >
       {stars.map((s) => (
         <span
           key={s.id}
@@ -82,9 +87,10 @@ export default function StarField() {
   const [shootingStar, setShootingStar] = useState(null);
 
   useEffect(() => {
-    // Only run parallax if the device has a fine pointer (desktop with mouse)
+    // Only run mouse parallax if the device has a fine pointer (desktop with mouse)
     const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
     let onMouse = null;
+    let onScroll = null;
 
     if (hasFinePointer) {
       onMouse = (e) => {
@@ -96,31 +102,47 @@ export default function StarField() {
       window.addEventListener("mousemove", onMouse, { passive: true });
 
       let tx = 0.5, ty = 0.5;
+      let lastScrollY = -1;
       const tick = () => {
         const dx = mouseRef.current.x - tx;
         const dy = mouseRef.current.y - ty;
+        const sy = window.scrollY;
 
-        // Only write to DOM if coordinates are actively changing
-        if (Math.abs(dx) > 0.0001 || Math.abs(dy) > 0.0001) {
+        // Only write to DOM if coordinates are actively changing or user is scrolling
+        if (Math.abs(dx) > 0.0001 || Math.abs(dy) > 0.0001 || sy !== lastScrollY) {
           tx += dx * 0.04;
           ty += dy * 0.04;
+          lastScrollY = sy;
 
           const ox = (tx - 0.5) * 80;
           const oy = (ty - 0.5) * 80;
 
-          // Stars parallax with hardware-accelerated translate3d
-          if (farRef.current)  farRef.current.style.transform  = `translate3d(${ox * 0.25}px, ${oy * 0.25}px, 0)`;
-          if (midRef.current)  midRef.current.style.transform  = `translate3d(${ox * 0.55}px, ${oy * 0.55}px, 0)`;
-          if (nearRef.current) nearRef.current.style.transform = `translate3d(${ox * 1.1}px, ${oy * 1.1}px, 0)`;
+          // Stars parallax with hardware-accelerated translate3d (combines scroll + mouse)
+          if (farRef.current)  farRef.current.style.transform  = `translate3d(${ox * 0.25}px, ${oy * 0.25 + sy * -0.06}px, 0)`;
+          if (midRef.current)  midRef.current.style.transform  = `translate3d(${ox * 0.55}px, ${oy * 0.55 + sy * -0.14}px, 0)`;
+          if (nearRef.current) nearRef.current.style.transform = `translate3d(${ox * 1.1}px, ${oy * 1.1 + sy * -0.25}px, 0)`;
           
           // Nebulas parallax (opposite direction for volume)
-          if (blob1Ref.current) blob1Ref.current.style.transform = `translate3d(${-ox * 0.4}px, ${-oy * 0.4}px, 0)`;
-          if (blob2Ref.current) blob2Ref.current.style.transform = `translate3d(${-ox * 0.7}px, ${-oy * 0.7}px, 0)`;
+          if (blob1Ref.current) blob1Ref.current.style.transform = `translate3d(${-ox * 0.4}px, ${-oy * 0.4 + sy * -0.15}px, 0)`;
+          if (blob2Ref.current) blob2Ref.current.style.transform = `translate3d(${-ox * 0.7}px, ${-oy * 0.7 + sy * -0.20}px, 0)`;
         }
 
         rafRef.current = requestAnimationFrame(tick);
       };
       rafRef.current = requestAnimationFrame(tick);
+    } else {
+      // On mobile/touch, run a high-performance passive scroll event listener
+      onScroll = () => {
+        const sy = window.scrollY;
+        if (farRef.current)  farRef.current.style.transform  = `translate3d(0, ${sy * -0.06}px, 0)`;
+        if (midRef.current)  midRef.current.style.transform  = `translate3d(0, ${sy * -0.14}px, 0)`;
+        if (nearRef.current) nearRef.current.style.transform = `translate3d(0, ${sy * -0.25}px, 0)`;
+        
+        if (blob1Ref.current) blob1Ref.current.style.transform = `translate3d(0, ${sy * -0.15}px, 0)`;
+        if (blob2Ref.current) blob2Ref.current.style.transform = `translate3d(0, ${sy * -0.20}px, 0)`;
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll(); // Initialize positions
     }
 
     // ── Shooting Star Sequencer (Exactly 10s gap, 3 specific paths) ──
@@ -147,6 +169,9 @@ export default function StarField() {
     return () => {
       if (hasFinePointer && onMouse) {
         window.removeEventListener("mousemove", onMouse);
+      }
+      if (!hasFinePointer && onScroll) {
+        window.removeEventListener("scroll", onScroll);
       }
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       clearTimeout(timeoutId);

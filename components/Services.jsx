@@ -45,7 +45,7 @@ export default function Services() {
   return (
     <section
       id="services"
-      className="section-anchor section-flow-fade relative z-20 -mt-28 pb-24 pt-16 sm:pb-28"
+      className="section-anchor section-flow-fade content-visibility-auto relative z-20 -mt-28 pb-24 pt-16 sm:pb-28"
     >
       <div className="section-shell">
         <Reveal>

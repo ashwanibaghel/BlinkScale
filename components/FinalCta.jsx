@@ -25,7 +25,7 @@ export default function FinalCta() {
   const ref = useInView(useRef(null));
 
   return (
-    <section id="contact" className="section-anchor py-24 sm:py-28">
+    <section id="contact" className="section-anchor content-visibility-auto py-24 sm:py-28">
       <div className="section-shell">
         <Reveal>
           <div className="glass-panel relative overflow-hidden rounded-[36px] px-6 py-14 text-center sm:px-10 sm:py-20">

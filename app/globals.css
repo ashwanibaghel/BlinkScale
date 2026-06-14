@@ -431,3 +431,9 @@ body::after {
   from { transform: rotate(var(--spark-start, 0deg)) translateX(calc(-1 * var(--orbit-radius, 90px))); }
   to   { transform: rotate(calc(var(--spark-start, 0deg) + 360deg)) translateX(calc(-1 * var(--orbit-radius, 90px))); }
 }
+
+/* ─── Mobile Rendering Optimization: Deferred Layout & Paint ─── */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 700px;
+}

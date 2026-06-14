@@ -68,7 +68,7 @@ function AnimatedStat({ value, suffix = "", label }) {
  */
 export default function About() {
   return (
-    <section id="about" className="section-anchor py-24 sm:py-28">
+    <section id="about" className="section-anchor content-visibility-auto py-24 sm:py-28">
       <div className="section-shell">
         <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           {/* Left: visual panel — fades in, no ongoing motion */}
@@ -91,6 +91,7 @@ export default function About() {
                   alt="Abstract BlinkScale systems illustration"
                   width={1200}
                   height={900}
+                  priority
                   className="h-auto w-full object-cover mix-blend-screen opacity-90 transition-transform duration-700 hover:scale-105"
                 />
               </div>

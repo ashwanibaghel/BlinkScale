@@ -28,7 +28,7 @@ function TestimonialCard({ testimonial }) {
 
 export default function Testimonials() {
   return (
-    <section id="testimonials" className="section-anchor py-24 sm:py-28">
+    <section id="testimonials" className="section-anchor content-visibility-auto py-24 sm:py-28">
       <div className="section-shell">
         <Reveal>
           <SectionHeading
