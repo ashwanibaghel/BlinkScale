@@ -30,9 +30,15 @@ export default function TiltCard({ children, className = "", intensity = 8 }) {
     springConfig,
   );
 
+  const rectRef = useRef(null);
+
   function handleMouseMove(e) {
-    if (reduceMotion || !ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
+    if (reduceMotion) return;
+    if (!rectRef.current && ref.current) {
+      rectRef.current = ref.current.getBoundingClientRect();
+    }
+    const rect = rectRef.current;
+    if (!rect) return;
     rawX.set((e.clientX - rect.left) / rect.width - 0.5);
     rawY.set((e.clientY - rect.top) / rect.height - 0.5);
   }
@@ -40,6 +46,7 @@ export default function TiltCard({ children, className = "", intensity = 8 }) {
   function handleMouseLeave() {
     rawX.set(0);
     rawY.set(0);
+    rectRef.current = null;
   }
 
   return (

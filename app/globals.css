@@ -392,20 +392,23 @@ body::after {
 }
 
 /* ─── StarField: shooting star ─── */
-/* Each .shooting-star appears at its position, streaks along --ss-angle, fades out */
+/* Each .shooting-star appears at its position, streaks along its rotated axis, fades out */
 @keyframes shootingStar {
-  0%   { opacity: 0;    transform: rotate(var(--ss-angle, 25deg)) translateX(0); }
-  5%   { opacity: 1;    }
-  20%  { opacity: 0;    transform: rotate(var(--ss-angle, 25deg)) translateX(var(--ss-travel, 800px)); }
-  100% { opacity: 0;    transform: rotate(var(--ss-angle, 25deg)) translateX(var(--ss-travel, 800px)); }
+  0%   { opacity: 0;    transform: translate3d(0, 0, 0); }
+  6%   { opacity: 1;    }
+  30%  { opacity: 0;    transform: translate3d(var(--ss-travel, 800px), 0, 0); }
+  100% { opacity: 0;    transform: translate3d(var(--ss-travel, 800px), 0, 0); }
 }
 .shooting-star {
   position:         absolute;
-  width:            var(--ss-len, 150px);
+  left:             0;
+  top:              0;
   height:           2px;
   background:       linear-gradient(to right, transparent, rgba(255,255,255,0.9) 50%, white 90%, transparent);
   border-radius:    9999px;
-  animation:        shootingStar var(--ss-dur, 5s) ease-in-out infinite;
+  animation-name:   shootingStar;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
   pointer-events:   none;
   will-change:      transform, opacity;
   box-shadow:       0 0 10px 2px rgba(255,255,255,0.3);

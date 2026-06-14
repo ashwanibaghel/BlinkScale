@@ -82,35 +82,46 @@ export default function StarField() {
   const [shootingStar, setShootingStar] = useState(null);
 
   useEffect(() => {
-    // ── Mouse Tracking & Parallax RAF ──
-    const onMouse = (e) => {
-      mouseRef.current = {
-        x: e.clientX / window.innerWidth,
-        y: e.clientY / window.innerHeight,
+    // Only run parallax if the device has a fine pointer (desktop with mouse)
+    const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
+    let onMouse = null;
+
+    if (hasFinePointer) {
+      onMouse = (e) => {
+        mouseRef.current = {
+          x: e.clientX / window.innerWidth,
+          y: e.clientY / window.innerHeight,
+        };
       };
-    };
-    window.addEventListener("mousemove", onMouse, { passive: true });
+      window.addEventListener("mousemove", onMouse, { passive: true });
 
-    let tx = 0.5, ty = 0.5;
-    const tick = () => {
-      tx += (mouseRef.current.x - tx) * 0.04;
-      ty += (mouseRef.current.y - ty) * 0.04;
+      let tx = 0.5, ty = 0.5;
+      const tick = () => {
+        const dx = mouseRef.current.x - tx;
+        const dy = mouseRef.current.y - ty;
 
-      const ox = (tx - 0.5) * 80;
-      const oy = (ty - 0.5) * 80;
+        // Only write to DOM if coordinates are actively changing
+        if (Math.abs(dx) > 0.0001 || Math.abs(dy) > 0.0001) {
+          tx += dx * 0.04;
+          ty += dy * 0.04;
 
-      // Stars parallax
-      if (farRef.current)  farRef.current.style.transform  = `translate(${ox * 0.25}px, ${oy * 0.25}px)`;
-      if (midRef.current)  midRef.current.style.transform  = `translate(${ox * 0.55}px, ${oy * 0.55}px)`;
-      if (nearRef.current) nearRef.current.style.transform = `translate(${ox * 1.1}px, ${oy * 1.1}px)`;
-      
-      // Nebulas parallax (opposite direction for volume)
-      if (blob1Ref.current) blob1Ref.current.style.transform = `translate(${-ox * 0.4}px, ${-oy * 0.4}px)`;
-      if (blob2Ref.current) blob2Ref.current.style.transform = `translate(${-ox * 0.7}px, ${-oy * 0.7}px)`;
+          const ox = (tx - 0.5) * 80;
+          const oy = (ty - 0.5) * 80;
 
+          // Stars parallax with hardware-accelerated translate3d
+          if (farRef.current)  farRef.current.style.transform  = `translate3d(${ox * 0.25}px, ${oy * 0.25}px, 0)`;
+          if (midRef.current)  midRef.current.style.transform  = `translate3d(${ox * 0.55}px, ${oy * 0.55}px, 0)`;
+          if (nearRef.current) nearRef.current.style.transform = `translate3d(${ox * 1.1}px, ${oy * 1.1}px, 0)`;
+          
+          // Nebulas parallax (opposite direction for volume)
+          if (blob1Ref.current) blob1Ref.current.style.transform = `translate3d(${-ox * 0.4}px, ${-oy * 0.4}px, 0)`;
+          if (blob2Ref.current) blob2Ref.current.style.transform = `translate3d(${-ox * 0.7}px, ${-oy * 0.7}px, 0)`;
+        }
+
+        rafRef.current = requestAnimationFrame(tick);
+      };
       rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
+    }
 
     // ── Shooting Star Sequencer (Exactly 10s gap, 3 specific paths) ──
     const presetShootingStars = [
@@ -134,7 +145,9 @@ export default function StarField() {
     timeoutId = setTimeout(triggerShootingStar, 3000);
 
     return () => {
-      window.removeEventListener("mousemove", onMouse);
+      if (hasFinePointer && onMouse) {
+        window.removeEventListener("mousemove", onMouse);
+      }
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       clearTimeout(timeoutId);
     };
@@ -171,17 +184,26 @@ export default function StarField() {
 
       {/* ── Single Shooting Star ── */}
       {shootingStar && (
-        <span
-          className="shooting-star"
+        <div
           style={{
+            position: "absolute",
             top: `${shootingStar.top}%`,
             left: `${shootingStar.left}%`,
-            "--ss-angle": `${shootingStar.angle}deg`,
-            "--ss-len": `${shootingStar.len}px`,
-            "--ss-dur": `${shootingStar.dur}s`,
-            "--ss-travel": `${shootingStar.travel}px`,
+            transform: `rotate(${shootingStar.angle}deg)`,
+            pointerEvents: "none",
+            zIndex: 1,
           }}
-        />
+        >
+          <span
+            className="shooting-star"
+            style={{
+              width: `${shootingStar.len}px`,
+              animationDuration: `${shootingStar.dur}s`,
+              animationIterationCount: 1,
+              "--ss-travel": `${shootingStar.travel}px`,
+            }}
+          />
+        </div>
       )}
     </div>
   );

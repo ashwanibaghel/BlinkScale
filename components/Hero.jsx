@@ -57,15 +57,22 @@ export default function Hero() {
   const solarY       = useTransform(scrollYProgress, [0, 0.65],    [0, -60]);
   const textY        = useTransform(scrollYProgress, [0, 0.5],     [0, -28]);
 
+  const rectRef = useRef(null);
+
   function handleMouseMove(e) {
-    if (reduceMotion || !heroRef.current) return;
-    const rect = heroRef.current.getBoundingClientRect();
+    if (reduceMotion) return;
+    if (!rectRef.current && heroRef.current) {
+      rectRef.current = heroRef.current.getBoundingClientRect();
+    }
+    const rect = rectRef.current;
+    if (!rect) return;
     mouseX.set(e.clientX - rect.left  - rect.width  / 2);
     mouseY.set(e.clientY - rect.top   - rect.height / 2);
   }
   function handleMouseLeave() {
     mouseX.set(0);
     mouseY.set(0);
+    rectRef.current = null;
   }
 
   return (

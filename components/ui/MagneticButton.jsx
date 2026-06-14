@@ -37,9 +37,15 @@ export default function MagneticButton({
   const y = useSpring(rawY, springConfig);
   const rotate = useSpring(rawRotate, { stiffness: 200, damping: 24 });
 
+  const rectRef = useRef(null);
+
   function handleMouseMove(e) {
-    if (reduceMotion || !ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
+    if (reduceMotion) return;
+    if (!rectRef.current && ref.current) {
+      rectRef.current = ref.current.getBoundingClientRect();
+    }
+    const rect = rectRef.current;
+    if (!rect) return;
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
     const dx = (e.clientX - cx) * 0.38;
@@ -54,6 +60,7 @@ export default function MagneticButton({
     rawX.set(0);
     rawY.set(0);
     rawRotate.set(0);
+    rectRef.current = null;
   }
 
   return (

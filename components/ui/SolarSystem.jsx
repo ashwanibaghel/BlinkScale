@@ -105,16 +105,23 @@ export default function SolarSystem() {
   const scalesRef    = useRef(PLANETS.map(() => 1));
   const mouseRef     = useRef({ x: 0, y: 0 }); // normalized -0.5 to 0.5
   const sunLightRef  = useRef({ x: 0, y: 0, op: 0.3 });
+  const hasPointerRef = useRef(true);
 
   // React state for card + hover rings
   const [hovered,  setHovered]  = useState(-1);
   const [focused,  setFocused]  = useState(-1); // click-selected planet index
   const [sunFocused, setSunFocused] = useState(false);
+  const [hasPointer, setHasPointer] = useState(true);
 
   const closeSun  = useCallback(() => setSunFocused(false), []);
 
+  const rectRef = useRef(null);
+
   const handleMouseMove = useCallback((e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
+    if (!rectRef.current) {
+      rectRef.current = e.currentTarget.getBoundingClientRect();
+    }
+    const rect = rectRef.current;
     mouseRef.current = {
       x: (e.clientX - rect.left - rect.width  / 2) / rect.width,
       y: (e.clientY - rect.top  - rect.height / 2) / rect.height,
@@ -128,6 +135,10 @@ export default function SolarSystem() {
   }, []);
 
   useEffect(() => {
+    const finePointer = window.matchMedia("(pointer: fine)").matches;
+    hasPointerRef.current = finePointer;
+    setHasPointer(finePointer);
+
     const sunMidEl = document.getElementById("sun-mid-glow");
     // Smoothed mouse position (lerped each frame for buttery movement)
     let smoothMx = 0, smoothMy = 0;
@@ -190,27 +201,48 @@ export default function SolarSystem() {
         // ── Brightness / opacity ──
         const baseBright = 1 - (i / PLANETS.length) * 0.28;
         const isFocusMode = fc !== -1;
+        const isFine = hasPointerRef.current;
 
         if (isFocusMode) {
           if (isFocused) {
             el.style.opacity = "1";
-            el.style.filter  = `brightness(2) drop-shadow(0 0 ${size * 4}px rgba(${p.glow},1))`;
+            if (isFine) {
+              el.style.filter  = `brightness(2) drop-shadow(0 0 ${size * 4}px rgba(${p.glow},1))`;
+            } else {
+              el.style.filter  = "none";
+            }
           } else {
             el.style.opacity = "0.12";
-            el.style.filter  = `brightness(0.3)`;
+            if (isFine) {
+              el.style.filter  = `brightness(0.3)`;
+            } else {
+              el.style.filter  = "none";
+            }
           }
         } else if (h === -1) {
           el.style.opacity = "1";
-          el.style.filter  = `brightness(${baseBright})`;
+          if (isFine) {
+            el.style.filter  = `brightness(${baseBright})`;
+          } else {
+            el.style.filter  = "none";
+          }
         } else if (h === i) {
           el.style.opacity = "1";
-          el.style.filter  = `brightness(1.9) drop-shadow(0 0 ${size * 3}px rgba(${p.glow},0.95))`;
+          if (isFine) {
+            el.style.filter  = `brightness(1.9) drop-shadow(0 0 ${size * 3}px rgba(${p.glow},0.95))`;
+          } else {
+            el.style.filter  = "none";
+          }
           // Sun shifts toward hovered
           const dist = Math.sqrt(ox * ox + oy * oy);
           if (dist > 0) { targetSunX = (ox / dist) * 20; targetSunY = (oy / dist) * 20; targetSunOp = 0.6; }
         } else {
           el.style.opacity = "0.2";
-          el.style.filter  = `brightness(${baseBright * 0.35})`;
+          if (isFine) {
+            el.style.filter  = `brightness(${baseBright * 0.35})`;
+          } else {
+            el.style.filter  = "none";
+          }
         }
 
         // ── Atmosphere layer ──
@@ -244,7 +276,10 @@ export default function SolarSystem() {
     <div
       style={{ position: "relative", width: SOLAR_SIZE, height: SOLAR_SIZE, flexShrink: 0, overflow: "visible" }}
       onMouseMove={handleMouseMove}
-      onMouseLeave={() => { mouseRef.current = { x: 0, y: 0 }; }}
+      onMouseLeave={() => {
+        mouseRef.current = { x: 0, y: 0 };
+        rectRef.current = null;
+      }}
     >
 
       {/* ── Click-outside backdrop (focus mode) ── */}
@@ -491,7 +526,7 @@ export default function SolarSystem() {
               width: "100%", height: "100%",
               borderRadius: "50%",
               background: p.gradient,
-              boxShadow: [
+              boxShadow: hasPointer ? [
                 // Inset dark shadow (shadow side, away from sun)
                 `inset -${p.size * 0.45}px -${p.size * 0.35}px ${p.size * 0.7}px rgba(0,0,0,0.72)`,
                 // Inset highlight (lit side — facing sun)
@@ -500,6 +535,10 @@ export default function SolarSystem() {
                 `0 0 ${p.size * 0.6}px rgba(${p.glow},0.5)`,
                 // Drop glow
                 `0 0 ${p.size * 2.5}px rgba(${p.glow},0.5)`,
+              ].join(", ") : [
+                `inset -${p.size * 0.45}px -${p.size * 0.35}px ${p.size * 0.7}px rgba(0,0,0,0.72)`,
+                `inset ${p.size * 0.25}px ${p.size * 0.2}px ${p.size * 0.45}px ${p.highlight || "rgba(255,255,255,0.22)"}`,
+                `0 0 ${p.size * 0.5}px rgba(${p.glow},0.3)`,
               ].join(", "),
               position: "relative", overflow: "visible",
             }}>
